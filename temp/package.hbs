@@ -1,0 +1,28 @@
+{
+  "name": "react-ie8",
+  "version": "1.0.0",
+  "description": "铭师堂",
+  "main": "",
+  "scripts": {
+    "dev": "cross-env BUILD_ENV=sit webpack-guardian dev",
+    "mock": "cross-env BUILD_ENV=mock  webpack-guardian dev",
+    "dev:mock": "cross-env BUILD_ENV=mock  webpack-guardian dev",
+    "dev:pre": "cross-env BUILD_ENV=pre  webpack-guardian dev",
+    "dev:prod": "cross-env BUILD_ENV=prod  webpack-guardian dev",
+    "build:mock": "echo 'build:mock ok'",
+    "build:sit": "echo 'build:sit ok'",
+    "build:pre": "echo 'build:pre ok'",
+    "build:prod": "echo 'build:prod ok'",
+    "build": "echo 'build ok'",
+    "local_build:mock": "cross-env BUILD_ENV=mock  webpack-guardian build",
+    "local_build:sit": "cross-env BUILD_ENV=sit  webpack-guardian build",
+    "local_build:pre": "cross-env BUILD_ENV=pre  webpack-guardian build",
+    "local_build:prod": "cross-env BUILD_ENV=prod  webpack-guardian build",
+    "local_build": "webpack-guardian build",
+    "lint": "tslint \"src/**/*.{ts,tsx}\""
+  },
+  "author": "mst-team",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
+}
