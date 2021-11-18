@@ -70,6 +70,7 @@ export const buildJob = async ({
   buildEnv,
   getBuildBashWithEnv = (env: Env) => `npm run build:${env}`,
   pushRetryTimes = 3,
+  outPutDir = './dist'
 }: QuickBuildConfig & { buildEnv: Env }): Promise<string> => {
   // 检查是否有未提交的内容
   const statusRes = await git.status();
@@ -88,7 +89,7 @@ export const buildJob = async ({
   const bash = getBuildBashWithEnv(buildEnv);
   await bashCmd(bash);
   try {
-    fs.statSync(path.join(process.cwd(), './dist'));
+    fs.statSync(path.join(process.cwd(), outPutDir));
     consoleGreen('✔️   编译完成');
   } catch (e) {
     consoleRed('❌  build fail.');
@@ -97,12 +98,12 @@ export const buildJob = async ({
 
   const distName = await gitCommitList(buildEnv, pushRetryTimes);
   await new Promise((res, rej) => {
-    rimraf(path.join(process.cwd(), '/dist'), (err) => {
+    rimraf(path.join(process.cwd(), outPutDir), (err) => {
       if (err) rej(err);
       res(undefined);
     });
   });
-  consoleGreen('✔️  dist removed.');
+  consoleGreen(`✔️  ${outPutDir} removed.`);
   return distName;
 };
 

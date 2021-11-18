@@ -3,5 +3,6 @@ export type QuickBuildConfig = {
   /** 编译的脚本 */
   getBuildBashWithEnv?: (env: Env) => string;
   environments?: Array<Env>,
-  pushRetryTimes?:number;
+  pushRetryTimes?: number;
+  outPutDir?: string;
 };
