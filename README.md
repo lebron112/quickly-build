@@ -10,9 +10,13 @@ module.exports = {
 }
 
 ```
+```
+npm run quickly-build
+```
 ***或者直接引用的方式***  
 
 ```
+// xxx.js
 const { QuickBuild } = require('quickly-build');
 // import { QuickBuild } from 'quickly-build'; in ts
 const job = new QuickBuild({
@@ -22,7 +26,9 @@ const job = new QuickBuild({
 job.start();
 
 ```
-
+```
+node xxx.js
+```
 ```
 type Env = 'sit' | 'pre' | 'prod' | string;
 type QuickBuildConfig = {
