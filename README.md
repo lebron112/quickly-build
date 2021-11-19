@@ -6,12 +6,13 @@ npm i quickly-build
 ```
 module.exports = {
   environments: ['sit', 'pre', 'prod'],
-  getBuildBashWithEnv: (env) => `npm run build:${env}`,
+  getBuildBashWithEnv: (env) => `npm run build:${env}`,// this env from environments
 }
 
 ```
 ```
-npm run quickly-build
+// package.json add
+"npm run build": "quickly-build"
 ```
 ***或者直接引用的方式***  
 
