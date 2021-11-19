@@ -72,6 +72,7 @@ export const buildJob = async ({
   pushRetryTimes = 3,
   outPutDir = './dist'
 }: QuickBuildConfig & { buildEnv: Env }): Promise<string> => {
+  consoleGreen(`start build env: '${buildEnv}' .`);
   // 检查是否有未提交的内容
   const statusRes = await git.status();
 

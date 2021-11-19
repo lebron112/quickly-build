@@ -2,7 +2,7 @@
 const path = require('path');
 const { existsSync } = require('fs');
 const { QuickBuild } = require('../dist/cjs');
-const configFilePath = path.resolve(process.cwd(), process.argv[4] || '.quicklyrc.js');
+const configFilePath = path.resolve(process.cwd(), process.argv[3] || '.quicklyrc.js');
 
 if (existsSync(configFilePath)) {
   const config = require(configFilePath);

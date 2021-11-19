@@ -8,7 +8,8 @@
   "scripts": {
     "build": "father build",
     "pre:pub": "npm run build && npm version patch",
-    "pub": "npm run pre:pub && npm publish"
+    "pub": "npm run pre:pub && npm publish",
+    "test": "node test.js 1111"
   },
   "files": [
     "/bin",

@@ -1,8 +1,10 @@
 ```
 npm i quickly-build
 ```
-***配置文件***  
+
+**_配置文件_**  
 在项目中创建 .quicklyrc.js
+
 ```
 module.exports = {
   environments: ['sit', 'pre', 'prod'],
@@ -10,11 +12,13 @@ module.exports = {
 }
 
 ```
+
 ```
 // package.json add
-"npm run build": "quickly-build"
+"npm run build": "quickly-build [env]"
 ```
-***或者直接引用的方式***  
+
+**_或者直接引用的方式_**
 
 ```
 // xxx.js
@@ -27,15 +31,21 @@ const job = new QuickBuild({
 job.start();
 
 ```
+
 ```
-node xxx.js
+node xxx.js [env]
 ```
+
 ```
 type Env = 'sit' | 'pre' | 'prod' | string;
 type QuickBuildConfig = {
-  /** 编译的脚本 */
+  /** 编译的脚本  default: (env) => `npm run build:${env}` */
   getBuildBashWithEnv?: (env: Env) => string;
+  /** readline 提示的 环境变量  default: ['sit','pre', 'prod'] */
   environments?: Array<Env>,
-  pushRetryTimes?:number;
+  /** git push 失败重新尝试推送次数, default: 3 */
+  pushRetryTimes?: number;
+  /** 检查编译后输出的相对目录， default: './dist' */
+  outPutDir?: string;;
 };
 ```
