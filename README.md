@@ -49,3 +49,5 @@ type QuickBuildConfig = {
   outPutDir?: string;;
 };
 ```
+
+***该脚本会和自动依赖的vscode插件冲突***
