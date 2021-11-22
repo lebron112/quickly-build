@@ -49,8 +49,16 @@ const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<stri
   }
   try {
     // 推送失败尝试3次
-    await retry(async () => {
-      await git.push('origin', distName, ['-f']); // 强制推送 打包分支只需要最新的dist输出
+    await retry(async (retryTime?: number) => {
+      try {
+        await git.push('origin', distName, ['-f']); // 强制推送 打包分支只需要最新的dist输出
+      } catch (e) {
+        await new Promise((resolve, reject) => {
+          setTimeout(resolve, 500);
+        });
+        throw new Error('retry');
+      }
+
     }, retryTimes, (err, num) => {
       consoleRed(`⚠️   push fail times: ${num}`);
     });
@@ -70,7 +78,7 @@ export const buildJob = async ({
   buildEnv,
   getBuildBashWithEnv = (env: Env) => `npm run build:${env}`,
   pushRetryTimes = 3,
-  outPutDir = './dist'
+  outPutDir = './dist',
 }: QuickBuildConfig & { buildEnv: Env }): Promise<string> => {
   consoleGreen(`start build env: '${buildEnv}' .`);
   // 检查是否有未提交的内容

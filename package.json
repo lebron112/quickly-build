@@ -15,12 +15,13 @@
     "/bin",
     "/dist",
     "/temp",
-    "readme.me"
+    "README.md"
   ],
   "keywords": [
     "mistong",
     "web",
-    "build"
+    "build",
+    "simple-git"
   ],
   "author": "mistong-lhb",
   "license": "ISC",

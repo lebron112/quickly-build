@@ -56,11 +56,11 @@ export const readlineJob: (txt: string) => Promise<{
 });
 
 // promise错误重试
-export const retry = (fnc: () => void, time = 1, retryErrorCb: (err: Error, index: number) => void) => {
+export const retry = (fnc: (timer?: number) => void, time = 1, retryErrorCb: (err: Error, index: number) => void) => {
   return new Promise((resolve, reject) => {
     let index = 0;
     const job = () => {
-      Promise.resolve(fnc()).then(res => {
+      Promise.resolve(fnc(index)).then(res => {
         resolve(res);
       }).catch(err => {
         index++;
