@@ -28,7 +28,7 @@ const job = new QuickBuild({
   environments: ['sit', 'pre', 'prod'],
   getBuildBashWithEnv: (env) => `npm run build:${env}`,
 });
-job.start();
+job.start();// job.start('sit')
 
 ```
 
