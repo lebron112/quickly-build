@@ -7,6 +7,19 @@ import { Env, QuickBuildConfig } from './getConfig';
 
 export const git = simpleGit();
 
+const checkAndBack = async (currentBranch: string) => {
+  const { files } = await git.status();
+  const filePath = [];
+  for (let i = 0; i < files.length; i++) {
+    filePath.push(files[i].path);
+  }
+  if (filePath.length) {
+    await git.add(filePath);
+    await git.commit(`build: add files`)
+  }
+  await git.checkout(currentBranch);
+};
+
 // 命令合计
 const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<string> => {
   const { all, current: currentBranch } = await git.branch({});
@@ -44,7 +57,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<stri
   try {
     await git.commit(`build: ${currentBranch} and auto push`);
   } catch (e) {
-    await git.checkout(currentBranch);
+    await checkAndBack(currentBranch);
     return distName;
   }
   try {
@@ -65,11 +78,11 @@ const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<stri
     consoleGreen('✔️  commit pushed success.');
   } catch (e) {
     consoleRed('❌  pushed fail, process exit.');
-    await git.checkout(currentBranch);
+    await checkAndBack(currentBranch);
     return distName;
   }
   // 切回当前分支
-  await git.checkout(currentBranch);
+  await checkAndBack(currentBranch);
   return distName;
 };
 
