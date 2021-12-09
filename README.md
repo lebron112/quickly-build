@@ -51,3 +51,4 @@ type QuickBuildConfig = {
 ```
 
 ***该脚本会和自动依赖的vscode插件冲突***
+***带commit检查类型的可能会导致commit失败而导致切换回当前分支失败***
