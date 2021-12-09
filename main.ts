@@ -31,14 +31,15 @@ export class QuickBuild {
         } else {
           return consoleRed(`${argv2} not in config.environments`);
         }
-      } 
+      }
       const { env: res, rl: rlRes } = await readlineJob(`enter a build env [ '${environments.join("'' | '")}' ] > `);
       buildEnv = res;
-      await buildJob({ ...this.quickBuildConfig, buildEnv });
+      const distName = await buildJob({ ...this.quickBuildConfig, buildEnv });
       rlRes.close();
+      return distName;
     } else {
       buildEnv = env;
-      await buildJob({ ...this.quickBuildConfig, buildEnv });
+      return await buildJob({ ...this.quickBuildConfig, buildEnv });
     }
 
   }
