@@ -28,6 +28,7 @@ const { QuickBuild } = require('quickly-build');
 const job = new QuickBuild({
   environments: ['sit', 'pre', 'prod'],
   getBuildBashWithEnv: (env) => `npm run build:${env}`,
+   onJobSuccess(rl) => { rl.close; }
 });
 job.start();// job.start('sit')
 
@@ -39,7 +40,7 @@ node xxx.js [env]
 
 ```
 type Env = 'sit' | 'pre' | 'prod' | string;
-type QuickBuildConfig = {
+export type QuickBuildConfig = {
   /** 编译的脚本  default: (env) => `npm run build:${env}` */
   getBuildBashWithEnv?: (env: Env) => string;
   /** readline 提示的 环境变量  default: ['sit','pre', 'prod'] */
@@ -47,8 +48,13 @@ type QuickBuildConfig = {
   /** git push 失败重新尝试推送次数, default: 3 */
   pushRetryTimes?: number;
   /** 检查编译后输出的相对目录， default: './dist' */
-  outPutDir?: string;;
+  outPutDir?: string;
+  /** 脚本执行成功的钩子， readline输入的会返回一个readline对象  */
+  onJobSuccess?: (v?: readline.Interface) => void;
+  /** 脚本执行失败的钩子 ，不一定会结束  */
+  onJobError?: (error: any) => void;
 };
+
 ```
 
 ***该脚本会和自动依赖的vscode插件冲突***
