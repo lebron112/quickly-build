@@ -1,3 +1,4 @@
+import readline from 'readline';
 export type Env = 'sit' | 'pre' | 'prod' | string;
 export type QuickBuildConfig = {
   /** 编译的脚本  default: (env) => `npm run build:${env}` */
@@ -8,4 +9,8 @@ export type QuickBuildConfig = {
   pushRetryTimes?: number;
   /** 检查编译后输出的相对目录， default: './dist' */
   outPutDir?: string;
+  /** 脚本执行成功的钩子， readline输入的会返回一个readline对象  */
+  onJobSuccess?: (v?: readline.Interface) => void;
+  /** 脚本执行失败的钩子 ，不一定会结束  */
+  onJobError?: (error: any) => void;
 };

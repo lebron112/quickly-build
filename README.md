@@ -9,6 +9,7 @@ npm i quickly-build
 module.exports = {
   environments: ['sit', 'pre', 'prod'],
   getBuildBashWithEnv: (env) => `npm run build:${env}`,// this env from environments
+  onJobSuccess(rl) => { rl.close; }
 }
 
 ```

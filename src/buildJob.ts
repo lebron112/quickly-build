@@ -21,12 +21,13 @@ const checkAndBack = async (currentBranch: string) => {
 };
 
 // 命令合计
-const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<string> => {
+const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (v: any) => void): Promise<string> => {
   const { all, current: currentBranch } = await git.branch({});
   buildEnv = buildEnv.trim();
   // 检查：不能在含有dist的分支进行打包
   if (/_dist_/.test(currentBranch)) {
     console.warn(`⚠️ ${currentBranch} build not allow.`);
+    onJobError(new Error(`${currentBranch} build not allowed`));
     return currentBranch;
   }
 
@@ -57,6 +58,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<stri
   try {
     await git.commit(`build: ${currentBranch} and auto push`);
   } catch (e) {
+    onJobError(e);
     await checkAndBack(currentBranch);
     return distName;
   }
@@ -69,6 +71,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<stri
         await new Promise((resolve, reject) => {
           setTimeout(resolve, 500);
         });
+
         throw new Error('retry');
       }
 
@@ -78,6 +81,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number): Promise<stri
     consoleGreen('✔️  commit pushed success.');
   } catch (e) {
     consoleRed('❌  pushed fail, process exit.');
+    onJobError(e);
     await checkAndBack(currentBranch);
     return distName;
   }
@@ -92,7 +96,8 @@ export const buildJob = async ({
   getBuildBashWithEnv = (env: Env) => `npm run build:${env}`,
   pushRetryTimes = 3,
   outPutDir = './dist',
-}: QuickBuildConfig & { buildEnv: Env }): Promise<string> => {
+  onJobError = (v: any) => { },
+}: Omit<QuickBuildConfig, 'onJobSuccess'> & { buildEnv: Env }): Promise<string> => {
   consoleGreen(`start build env: '${buildEnv}' .`);
   // 检查是否有未提交的内容
   const statusRes = await git.status();
@@ -105,6 +110,7 @@ export const buildJob = async ({
     notCommit = true;
   }
   if (notCommit) {
+    onJobError(new Error('❌  has file not commited'));
     return '';
   }
   // 编译
@@ -114,11 +120,12 @@ export const buildJob = async ({
     fs.statSync(path.join(process.cwd(), outPutDir));
     consoleGreen('✔️   编译完成');
   } catch (e) {
+    onJobError(e);
     consoleRed('❌  build fail.');
     return '';
   }
 
-  const distName = await gitCommitList(buildEnv, pushRetryTimes);
+  const distName = await gitCommitList(buildEnv, pushRetryTimes, onJobError);
   await new Promise((res, rej) => {
     rimraf(path.join(process.cwd(), outPutDir), (err) => {
       if (err) rej(err);

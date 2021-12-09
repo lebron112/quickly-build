@@ -2,6 +2,8 @@ import { Env, QuickBuildConfig } from "./src/getConfig";
 import { buildJob, git } from './src/buildJob';
 import { consoleRed, readlineJob } from "./src/utils";
 
+type ParamsType<T> = T extends (param: infer P) => any ? P : T;
+
 export class QuickBuild {
 
   private quickBuildConfig: QuickBuildConfig;
@@ -20,6 +22,15 @@ export class QuickBuild {
   public start = async (env?: Env) => {
     let buildEnv: Env;
     const argv2 = process.argv[2];
+    const { onJobSuccess, onJobError } = this.quickBuildConfig;
+
+    const nextTickDoJob = (v?: ParamsType<QuickBuildConfig["onJobSuccess"]>) => {
+      process.nextTick(() => {
+        if (onJobSuccess) {
+          onJobSuccess(v);
+        }
+      });
+    };
 
     if (!env) {
       const { environments = ['sit', 'pre', 'prod'] } = this.quickBuildConfig;
@@ -27,19 +38,23 @@ export class QuickBuild {
         // 从node argv取参数
         if (environments.includes(argv2)) {
           buildEnv = argv2;
-          return await buildJob({ ...this.quickBuildConfig, buildEnv });
+          const distName = await buildJob({ ...this.quickBuildConfig, buildEnv });
+          nextTickDoJob();
+          return distName;
         } else {
           return consoleRed(`${argv2} not in config.environments`);
         }
       }
       const { env: res, rl: rlRes } = await readlineJob(`enter a build env [ '${environments.join("'' | '")}' ] > `);
       buildEnv = res;
-      const distName = await buildJob({ ...this.quickBuildConfig, buildEnv });
-      rlRes.close();
+      const distName = await buildJob({ ...this.quickBuildConfig, buildEnv, onJobError });
+      nextTickDoJob(rlRes);
       return distName;
     } else {
       buildEnv = env;
-      return await buildJob({ ...this.quickBuildConfig, buildEnv });
+      const distName = await buildJob({ ...this.quickBuildConfig, buildEnv });
+      nextTickDoJob();
+      return distName;
     }
 
   }
