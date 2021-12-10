@@ -24,10 +24,10 @@ export class QuickBuild {
     const argv2 = process.argv[2];
     const { onJobSuccess, onJobError } = this.quickBuildConfig;
 
-    const nextTickDoJob = (v?: ParamsType<QuickBuildConfig["onJobSuccess"]>) => {
+    const nextTickDoJob = (v: ParamsType<QuickBuildConfig["onJobSuccess"]>, env?:string ) => {
       process.nextTick(() => {
         if (onJobSuccess) {
-          onJobSuccess(v);
+          onJobSuccess(v, env);
         }
       });
     };
@@ -39,7 +39,7 @@ export class QuickBuild {
         if (environments.includes(argv2)) {
           buildEnv = argv2;
           const distName = await buildJob({ ...this.quickBuildConfig, buildEnv });
-          nextTickDoJob();
+          nextTickDoJob(null, buildEnv);
           return distName;
         } else {
           return consoleRed(`${argv2} not in config.environments`);
@@ -48,12 +48,12 @@ export class QuickBuild {
       const { env: res, rl: rlRes } = await readlineJob(`enter a build env [ '${environments.join("'' | '")}' ] > `);
       buildEnv = res;
       const distName = await buildJob({ ...this.quickBuildConfig, buildEnv, onJobError });
-      nextTickDoJob(rlRes);
+      nextTickDoJob(rlRes, buildEnv);
       return distName;
     } else {
       buildEnv = env;
       const distName = await buildJob({ ...this.quickBuildConfig, buildEnv });
-      nextTickDoJob();
+      nextTickDoJob(null, buildEnv);
       return distName;
     }
 

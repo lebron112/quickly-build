@@ -16,7 +16,7 @@ const checkAndBack = async (currentBranch: string) => {
   }
   if (filePath.length) {
     await git.add(filePath);
-    await git.commit(`build: add files`)
+    await git.commit(`build: add files`);
   }
   await git.checkout(currentBranch);
 };
@@ -24,7 +24,7 @@ const checkAndBack = async (currentBranch: string) => {
 // 修改package.json文件
 const writePackageJson = () => {
   // npm install 时执行的钩子  需要排除
-  const npmHooksScripts = ['preinstall', 'postinstall', 'prepare', 'install']
+  const npmHooksScripts = ['preinstall', 'postinstall', 'prepare', 'install'];
   const dataStr = fs.readFileSync(path.join(__dirname, '../temp/package.hbs'));
   const originalDataStr = fs.readFileSync(path.join(process.cwd(), './package.json'));
   const data = JSON.parse(dataStr.toString());

@@ -50,7 +50,7 @@ export type QuickBuildConfig = {
   /** 检查编译后输出的相对目录， default: './dist' */
   outPutDir?: string;
   /** 脚本执行成功的钩子， readline输入的会返回一个readline对象  */
-  onJobSuccess?: (v?: readline.Interface) => void;
+  onJobSuccess?: (v?: readline.Interface | null, env?:string) => void;
   /** 脚本执行失败的钩子 ，不一定会结束  */
   onJobError?: (error: any) => void;
 };
