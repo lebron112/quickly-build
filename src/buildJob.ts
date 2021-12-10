@@ -7,6 +7,7 @@ import { Env, QuickBuildConfig } from './getConfig';
 
 export const git = simpleGit();
 
+// 检查当前打包分支的文件，再切换回分支
 const checkAndBack = async (currentBranch: string) => {
   const { files } = await git.status();
   const filePath = [];
@@ -18,6 +19,29 @@ const checkAndBack = async (currentBranch: string) => {
     await git.commit(`build: add files`)
   }
   await git.checkout(currentBranch);
+};
+
+// 修改package.json文件
+const writePackageJson = () => {
+  // npm install 时执行的钩子  需要排除
+  const npmHooksScripts = ['preinstall', 'postinstall', 'prepare', 'install']
+  const dataStr = fs.readFileSync(path.join(__dirname, '../temp/package.hbs'));
+  const originalDataStr = fs.readFileSync(path.join(process.cwd(), './package.json'));
+  const data = JSON.parse(dataStr.toString());
+  const originalData = JSON.parse(originalDataStr.toString());
+  const writeData = {
+    ...originalData, ...data, scripts: {
+      ...originalData.scripts,
+      ...data.scripts,
+    }
+  };
+  npmHooksScripts.forEach(item => {
+    if (writeData.scripts[item]) {
+      delete writeData.scripts[item];
+    }
+  });
+  const writeDataStr = JSON.stringify(writeData, null, 2);
+  fs.writeFileSync(path.join(process.cwd(), './package.json'), writeDataStr);
 };
 
 // 命令合计
@@ -46,8 +70,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (
   await git.checkout(['-b', distName]);
   consoleGreen(`✔️  switch to ${distName} .`);
   // 读取package.json模板 写入到文件
-  const data = fs.readFileSync(path.join(__dirname, '../temp/package.hbs'));
-  fs.writeFileSync(path.join(process.cwd(), './package.json'), data);
+  writePackageJson();
 
   // 读取.gitignore模板 写入到文件
   const igonreData = fs.readFileSync(path.join(__dirname, '../temp/ignore.hbs'));
