@@ -1,6 +1,6 @@
 {
   "name": "quickly-build",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "mistong web local build script.",
   "main": "dist/cjs.js",
   "bin": "./bin/quickly-build.js",
