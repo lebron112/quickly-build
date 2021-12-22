@@ -8,7 +8,7 @@ import { Env, QuickBuildConfig } from './getConfig';
 export const git = simpleGit();
 
 // 检查当前打包分支的文件，再切换回分支
-const checkAndBack = async (currentBranch: string) => {
+const checkAndBack = async (currentBranch: string, distBranchName?: string) => {
   const { files } = await git.status();
   const filePath = [];
   for (let i = 0; i < files.length; i++) {
@@ -19,6 +19,10 @@ const checkAndBack = async (currentBranch: string) => {
     await git.commit(`build: add files`);
   }
   await git.checkout(currentBranch);
+  if (distBranchName) {
+    await git.branch(['-D', distBranchName]);
+  }
+  consoleGreen(`✔️  checkout back: '${currentBranch}'` + (distBranchName ? ` and remove dist branch: '${distBranchName}'` : ''));
 };
 
 // 修改package.json文件
@@ -82,7 +86,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (
     await git.commit(`build: ${currentBranch} and auto push`);
   } catch (e) {
     onJobError(e);
-    await checkAndBack(currentBranch);
+    await checkAndBack(currentBranch, distName);
     return distName;
   }
   try {
@@ -105,11 +109,13 @@ const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (
   } catch (e) {
     consoleRed('❌  pushed fail, process exit.');
     onJobError(e);
+    // 推送失败 不删除 dist分支
     await checkAndBack(currentBranch);
+    // process.exit(1);
     return distName;
   }
   // 切回当前分支
-  await checkAndBack(currentBranch);
+  await checkAndBack(currentBranch, distName);
   return distName;
 };
 

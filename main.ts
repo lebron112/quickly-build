@@ -1,6 +1,6 @@
 import { Env, QuickBuildConfig } from "./src/getConfig";
 import { buildJob, git } from './src/buildJob';
-import { consoleRed, readlineJob } from "./src/utils";
+import { consoleGreen, consoleRed, readlineJob } from "./src/utils";
 
 type ParamsType<T> = T extends (param: infer P) => any ? P : T;
 
@@ -23,9 +23,10 @@ export class QuickBuild {
     let buildEnv: Env;
     const argv2 = process.argv[2];
     const { onJobSuccess, onJobError } = this.quickBuildConfig;
-
+    const st = Date.now();
     const nextTickDoJob = (v: ParamsType<QuickBuildConfig["onJobSuccess"]>, env?:string ) => {
       process.nextTick(() => {
+        consoleGreen(`【build job use time:  ${Date.now() - st}】...`);
         if (onJobSuccess) {
           onJobSuccess(v, env);
         }
