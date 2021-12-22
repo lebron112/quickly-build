@@ -22,7 +22,8 @@ const checkAndBack = async (currentBranch: string, distBranchName?: string) => {
   if (distBranchName) {
     await git.branch(['-D', distBranchName]);
   }
-  consoleGreen(`✔️  checkout back: '${currentBranch}'` + (distBranchName ? ` and remove dist branch: '${distBranchName}'` : ''));
+  consoleGreen(`✔️  checkout back: '${currentBranch}'` +
+    (distBranchName ? ` and remove dist branch: '${distBranchName}'` : ''));
 };
 
 // 修改package.json文件
