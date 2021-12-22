@@ -24,9 +24,14 @@ export class QuickBuild {
     const argv2 = process.argv[2];
     const { onJobSuccess, onJobError } = this.quickBuildConfig;
     const st = Date.now();
-    const nextTickDoJob = (v: ParamsType<QuickBuildConfig["onJobSuccess"]>, env?:string ) => {
+    const nextTickDoJob = (v: ParamsType<QuickBuildConfig["onJobSuccess"]>, env?: string) => {
       process.nextTick(() => {
-        consoleGreen(`【build job use time:  ${Date.now() - st}】...`);
+        const buildTime = Date.now() - st;
+        const min = Math.floor(buildTime / 60000);
+        const str = min > 0 ?
+          `${min} min ${((buildTime - min * 60000) / 1000).toFixed(1)}s` :
+          `${(buildTime / 1000).toFixed(1)}s`;
+        consoleGreen(`✔️   build job use time: ${str}...`);
         if (onJobSuccess) {
           onJobSuccess(v, env);
         }
