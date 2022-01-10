@@ -80,6 +80,15 @@ const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (
   // 读取.gitignore模板 写入到文件
   const igonreData = fs.readFileSync(path.join(__dirname, '../temp/ignore.hbs'));
   fs.writeFileSync(path.join(process.cwd(), './.gitignore'), igonreData);
+  // 删除package-lock.json
+  if (fs.existsSync(path.join(process.cwd(), 'package-lock.json'))) {
+    await new Promise((res, rej) => {
+      rimraf(path.join(process.cwd(), 'package-lock.json'), (err) => {
+        if (err) rej(err);
+        res(undefined);
+      });
+    });
+  }
 
   // 进行提交
   await git.add('.');
