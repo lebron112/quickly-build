@@ -81,14 +81,17 @@ const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (
   const igonreData = fs.readFileSync(path.join(__dirname, '../temp/ignore.hbs'));
   fs.writeFileSync(path.join(process.cwd(), './.gitignore'), igonreData);
   // 删除package-lock.json
-  if (fs.existsSync(path.join(process.cwd(), 'package-lock.json'))) {
-    await new Promise((res, rej) => {
-      rimraf(path.join(process.cwd(), 'package-lock.json'), (err) => {
-        if (err) rej(err);
-        res(undefined);
+  try {
+    const lockPath = path.join(process.cwd(), 'package-lock.json');
+    if (fs.existsSync(lockPath)) {
+      await new Promise((res, rej) => {
+        rimraf(lockPath, (err) => {
+          if (err) rej(err);
+          res(undefined);
+        });
       });
-    });
-  }
+    }
+  } catch (error) { }
 
   // 进行提交
   await git.add('.');
@@ -165,12 +168,17 @@ export const buildJob = async ({
   }
 
   const distName = await gitCommitList(buildEnv, pushRetryTimes, onJobError);
-  await new Promise((res, rej) => {
-    rimraf(path.join(process.cwd(), outPutDir), (err) => {
-      if (err) rej(err);
-      res(undefined);
+  try {
+    await new Promise((res, rej) => {
+      rimraf(path.join(process.cwd(), outPutDir), (err) => {
+        if (err) rej(err);
+        res(undefined);
+      });
     });
-  });
+  } catch (error) {
+
+  }
+
   consoleGreen(`✔️  ${outPutDir} removed.`);
   return distName;
 };
