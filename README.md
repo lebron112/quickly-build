@@ -9,14 +9,16 @@ npm i quickly-build
 module.exports = {
   environments: ['sit', 'pre', 'prod'],
   getBuildBashWithEnv: (env) => `npm run build:${env}`,// this env from environments
-  onJobSuccess(rl) => { rl.close; }
+  // 打包结束后执行
+  onJobSuccess: (rl) => { rl && rl.close(); }
 }
 
 ```
 
 ```
 // package.json add
-"npm run build": "quickly-build [env]"
+"npm run build": "quickly-build" or 
+"npm run quickly-build [env]": "quickly-build"
 ```
 
 **_或者直接引用的方式_**
@@ -28,7 +30,7 @@ const { QuickBuild } = require('quickly-build');
 const job = new QuickBuild({
   environments: ['sit', 'pre', 'prod'],
   getBuildBashWithEnv: (env) => `npm run build:${env}`,
-   onJobSuccess(rl) => { rl.close; }
+  onJobSuccess: (rl) => { rl && rl.close(); }
 });
 job.start();// job.start('sit')
 
