@@ -40,6 +40,7 @@ const writePackageJson = () => {
       ...data.scripts,
     }
   };
+  delete writeData.husky;
   npmHooksScripts.forEach(item => {
     if (writeData.scripts[item]) {
       delete writeData.scripts[item];
@@ -86,7 +87,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (
     if (fs.existsSync(lockPath)) {
       await new Promise((res, rej) => {
         rimraf(lockPath, (err) => {
-          if (err) rej(err);
+          if (err) consoleRed(err);
           res(undefined);
         });
       });
