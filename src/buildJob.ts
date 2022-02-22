@@ -65,7 +65,7 @@ const gitCommitList = async (buildEnv: string, retryTimes: number, onJobError: (
   const nowName = (/^trunk_/.test(currentBranch) && currentBranch.replace('trunk_', '')) ||
     (/^release_/.test(currentBranch) && currentBranch.replace('release_', '')) ||
     currentBranch;
-  const distName = `${buildEnv === 'sit' ? 'trunk_dist_' :
+  const distName = `${(buildEnv === 'sit' || /test/.test(buildEnv)) ? 'trunk_dist_' :
     (buildEnv === 'pre' ? 'release_pre_dist_' : 'release_dist_')}${nowName}`;
   const find = all.find(item => item === distName);
 

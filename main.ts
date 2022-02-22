@@ -51,7 +51,7 @@ export class QuickBuild {
           return consoleRed(`${argv2} not in config.environments`);
         }
       }
-      const { env: res, rl: rlRes } = await readlineJob(`enter a build env [ '${environments.join("'' | '")}' ] > `);
+      const { env: res, rl: rlRes } = await readlineJob(`enter a build env [ '${environments.join("' | '")}' ] > `);
       buildEnv = res;
       const distName = await buildJob({ ...this.quickBuildConfig, buildEnv, onJobError });
       nextTickDoJob(rlRes, buildEnv);
